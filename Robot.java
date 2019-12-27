@@ -1,8 +1,6 @@
 
 public class Robot {
     
-    public static enum Sides {LEFT, RIGHT, FRONT}
-    
     private char[][] mazeToNavigate;
     private char[][] movementRecord;
     private char directionSymbol;
@@ -18,6 +16,16 @@ public class Robot {
      * 
      * @param maze An two-dimensional array of chars representing a maze.
      */
+    
+    Robot() {
+        stepCount = 0;
+        turnCount = 0;
+        mazeToNavigate = new RandomMaze().getMaze();
+        initializeMovementRecord();
+        initializePosition();
+        initializeDirection();
+        setDirectionSymbol();
+    }
 
     Robot(char[][] maze) {
         stepCount = 0;
