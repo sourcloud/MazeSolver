@@ -1,8 +1,8 @@
 
 public class RandomMaze {
     
-    private static final int MINRANGE = 7;
-    private static final int MAXRANGE = 20;
+    private static final int MINRANGE = 5;
+    private static final int MAXRANGE = 35;
     
     private final int HEIGHT;
     private final int WIDTH;
@@ -17,23 +17,83 @@ public class RandomMaze {
         initializeStartingPoint();
         setStartingPointInMaze();
         generatePath(startingPoint.getX(), startingPoint.getY());
+        setEntryPoint();
+        setExitPoint();
+    }
+    
+    private void setEntryPoint() {
+        int side = getRandomInRange(1, 4);
+        int row;
+        int col;
+        do {
+            row = 0;
+            col = 0;
+            switch (side) {
+            case 1:                         // left
+                while (maze[row][col+1] != Symbols.EMPTY.getSign()) {
+                    row = getRandomInRange(0, HEIGHT-1);
+                }
+                break;
+            case 2:                         // right
+                while (maze[row][WIDTH-2] != Symbols.EMPTY.getSign()) {
+                    row = getRandomInRange(0, HEIGHT-1);
+                }
+                col = WIDTH-1;
+                break;
+            case 3:                         // up
+                while (maze[row+1][col] != Symbols.EMPTY.getSign()) {
+                    col = getRandomInRange(0, WIDTH-1);
+                }
+                break;
+            case 4:                         // down
+                while (maze[HEIGHT-2][col] != Symbols.EMPTY.getSign()) {
+                    col = getRandomInRange(0, WIDTH-1);
+                }
+                row = HEIGHT-1;
+                break;
+            default:
+                break;
+            }
+        } while (isEdge(row, col));
+        startingPoint = new Point(row, col);
+        maze[row][col] = Symbols.START.getSign();
+    }
+    
+    private void setExitPoint() {
+        int row;
+        int col;
+        do {
+            row = 0;
+            col = 0;
+            
+            if (startingPoint.getX() == 0) {
+                while (maze[HEIGHT-2][col] != Symbols.EMPTY.getSign())
+                    col = getRandomInRange(0, WIDTH-1);
+                row = HEIGHT-1;
+            } else if (startingPoint.getX() == HEIGHT-1) {
+                while (maze[row+1][col] != Symbols.EMPTY.getSign())
+                    col = getRandomInRange(0, WIDTH-1);
+            } else if (startingPoint.getY() == 0) {
+                while (maze[row][WIDTH-2] == Symbols.EMPTY.getSign()) {
+                    row = getRandomInRange(0, HEIGHT-1);
+                }
+                col = WIDTH-1;
+            } else if (startingPoint.getY() != 0) {
+                while (maze[row][col+1] != Symbols.EMPTY.getSign()) {
+                    row = getRandomInRange(0, HEIGHT-1);
+                }
+            }
+        } while (isEdge(row, col));
+        maze[row][col] = Symbols.END.getSign();
+    }
+    
+    private boolean isEdge(int row, int col) {
+        return ((row == 0 && col == 0) || (row == 0 && col == WIDTH-1) || (row == HEIGHT-1 && col == 0) || (row == HEIGHT-1 && col == WIDTH-1));
     }
     
     public char[][] getMaze() {
         return maze;
     }
-    
-    
-    public void printMaze() {
-        for (char[] row : maze) {
-            for (char col : row) {
-                System.out.print(col + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
-    }
-    
     
     private int getRandomInRange(int min, int max) {
         return min + (int) (Math.random() * (max - min + 1));
@@ -74,11 +134,22 @@ public class RandomMaze {
         int col = startingPoint.getY();
         maze[row][col] = Symbols.EMPTY.getSign();
     }
-   
     
-   private void generatePath(int row, int col) {
-       
-       for (Directions direction : Directions.values()) {
+    private Directions[] shuffleArray(Directions[] toShuffle) {
+        for (int i = 0; i < toShuffle.length; i++) {
+            int randomPosition = getRandomInRange(0, toShuffle.length-1);
+            Directions temp = toShuffle[i];
+            toShuffle[i] = toShuffle[randomPosition];
+            toShuffle[randomPosition] = temp;
+        }
+        return toShuffle;
+    }
+    
+    private void generatePath(int row, int col) {
+
+       Directions[] shuffledDirections = shuffleArray(Directions.values());
+
+       for (Directions direction : shuffledDirections) {
            switch (direction) {
            case NORTH:
                if (row - 2 <= 0)
@@ -94,7 +165,7 @@ public class RandomMaze {
                    continue;
                if (maze[row][col + 2] != Symbols.EMPTY.getSign()) {
                    maze[row][col + 2] = Symbols.EMPTY.getSign();
-                   maze[row][col + 2] = Symbols.EMPTY.getSign();
+                   maze[row][col + 1] = Symbols.EMPTY.getSign();
                    generatePath(row, col + 2);
                }
                break;
