@@ -1,6 +1,9 @@
+package maze;
 
 public enum Sides {
     LEFT, 
     RIGHT, 
-    FRONT;
+    FRONT,
+    TOP,
+    BOTTOM;
 }

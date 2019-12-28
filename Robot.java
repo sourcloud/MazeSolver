@@ -1,3 +1,4 @@
+package maze;
 
 public class Robot {
     
@@ -8,6 +9,16 @@ public class Robot {
     private Point direction;
     private int stepCount;
     private int turnCount;
+  
+    Robot() {
+        stepCount = 0;
+        turnCount = 0;
+        mazeToNavigate = new MazeGenerator().getMaze();
+        initializeMovementRecord();
+        initializePosition();
+        initializeDirection();
+        setDirectionSymbol();
+    }
 
     /**
      * Constructs robot by initializing step and turn count, the maze its in,
@@ -16,16 +27,6 @@ public class Robot {
      * 
      * @param maze An two-dimensional array of chars representing a maze.
      */
-    
-    Robot() {
-        stepCount = 0;
-        turnCount = 0;
-        mazeToNavigate = new RandomMaze().getMaze();
-        initializeMovementRecord();
-        initializePosition();
-        initializeDirection();
-        setDirectionSymbol();
-    }
 
     Robot(char[][] maze) {
         stepCount = 0;
@@ -36,6 +37,11 @@ public class Robot {
         initializeDirection();
         setDirectionSymbol();
     }
+    
+    /**
+     * Turns Robot to either left or right side, sets direction symbol and increases turn count.
+     * @param sideToTurn
+     */
     
     public void turnToSide(Sides sideToTurn) {
         direction.swapCoordinates();
@@ -72,15 +78,21 @@ public class Robot {
      * @return
      */
     
-    public boolean hasSymbolToTheSide(Sides side, Symbols symbol) {
+    public boolean isNextToField(Sides side, Symbols symbol) {
         Point positionOfSide = getPositionOfSide(side);
         char sign = symbol.getSign();
         int row = positionOfSide.getX();
         int col = positionOfSide.getY();
         return mazeToNavigate[row][col] == sign;
     }
+    
+    /**
+     * 
+     * @param symbol
+     * @return
+     */
 
-    public boolean hasSymbolOnPosition(Symbols symbol) {
+    public boolean isOnField(Symbols symbol) {
         int row = position.getX();
         int col = position.getY();
         char sign = symbol.getSign();
@@ -127,11 +139,7 @@ public class Robot {
 
     public void printMovementRecord() {
         System.out.println("The robot took the following route: \n");
-        for (char[] row : movementRecord) {
-            for (char col : row)
-                System.out.print(col + " ");
-            System.out.println();
-        }
+        Helper.print2DArray(movementRecord);
     }
 
     /**
@@ -140,9 +148,7 @@ public class Robot {
 
     private void initializeMovementRecord() {
         movementRecord = new char[mazeToNavigate.length][mazeToNavigate[0].length];
-        for (char[] row : movementRecord)
-            for (int col = 0; col < row.length; col++)
-                row[col] = Symbols.EMPTY.getSign();
+        Helper.fill2DArray(movementRecord, Symbols.EMPTY.getSign());
     }
 
     /**
