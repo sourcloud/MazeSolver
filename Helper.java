@@ -29,6 +29,60 @@ public class Helper {
     }
     
     /**
+     * Searches given 2D-char-array for a given entry, returns position as Point if found
+     * @param toSearch 2D-char-array to be searched search
+     * @param toFind Char to be found
+     * @return Point with row and col as coordinates if entry found, -1 and -1 if not found
+     */
+    
+    public static Point getPositionOfEntryIn2DArray(char[][] toSearch, char toFind) {
+        for (int row = 0; row < toSearch.length; row++)
+            for (int col = 0; col < toSearch[0].length; col++)
+                if (toSearch[row][col] == toFind)
+                    return new Point(row, col);
+        return new Point(-1,-1);
+    }
+    
+    /**
+     * Gets entry at a given position of an 2D-array.
+     * @param position Point representing position in 2D-array.
+     * @param array 2D-char-array to get entry from.
+     */
+    
+    public static char getEntryAtPositionOf2DArray(Point position, char[][] array) {
+        int row = position.getX();
+        int col = position.getY();
+        return array[row][col];
+    }
+    
+    /**
+     * Sets entry at a given position of an 2D-array to a certain entry.
+     * @param position Point representing position in 2D-array.
+     * @param array 2D-char-array where entry will be set.
+     * @param toBeSet char that will be set.
+     */
+    
+    public static void setEntryAtPositionOf2DArray(Point position, char[][] array, char toBeSet) {
+        int row = position.getX();
+        int col = position.getY();
+        array[row][col] = toBeSet;
+    }
+    
+    /**
+     * Checks if entry at a given position of a 2D-char-array is equal to a given char.
+     * @param position Point representing row and column of 2D-Array.
+     * @param array 2D-char-array that's entry will be checked
+     * @param compareChar 
+     * @return Boolean answering if entry at given position is given char.
+     */
+    
+    public static boolean isEntryAtPositionOf2DArrayEqualTo(Point position, char[][] array, char compareChar) {
+        int row = position.getX();
+        int col = position.getY();
+        return array[row][col] == compareChar;
+    }
+    
+    /**
      * Fills a given char-array with a given char.
      * @param toFill Array to fill.
      * @param fillValue Char to be filled in array.
@@ -67,26 +121,50 @@ public class Helper {
      */
     
     public static void print2DArray(char[][] toPrint) {
-        for (char[] array : toPrint)
-            printArray(array);
+        for (char[] row : toPrint)
+            printArray(row);
         System.out.println();
     }
     
     /**
-     * Shuffels an given array of Directions.
+     * Shuffles an given array of Directions.
      * @param toShuffle Array to be shuffle.
      * @return Shuffled Array.
      */
     
     public static Directions[] shuffleArray(Directions[] toShuffle) {
-        int randomPosition = 0;
+        int randomIndex = 0;
         for (int i = 0; i < toShuffle.length; i++) {
-            randomPosition = getRandomInRange(0, toShuffle.length-1);
-            Directions temp = toShuffle[i];
-            toShuffle[i] = toShuffle[randomPosition];
-            toShuffle[randomPosition] = temp;
+            randomIndex = getRandomInRange(0, toShuffle.length-1);
+            swapArrayElements(toShuffle, i, randomIndex);
         }
         return toShuffle;
+    }
+    
+    /**
+     * Swap two elements at given indexes in an array.
+     * @param toSwap Array that's elements will be swapped.
+     * @param firstIndex Int index of first element.
+     * @param secondIndex Int index of second element.
+     */
+    
+    public static void swapArrayElements(Directions[] toSwap, int firstIndex, int secondIndex) {
+        Directions temp = toSwap[firstIndex];
+        toSwap[firstIndex] = toSwap[secondIndex];
+        toSwap[secondIndex] = temp;
+    }
+    
+    /**
+     * Tries to Sleep for a given amount of time.
+     * @param timeInMilliSeconds Int representing an amount of time in milliseconds.
+     */
+    
+    public static void tryToSleep(int timeInMilliSeconds) {
+        try { 
+            Thread.sleep(timeInMilliSeconds);
+        } catch (InterruptedException e) { 
+            e.printStackTrace();
+        }
     }
     
 }

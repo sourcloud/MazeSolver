@@ -2,6 +2,7 @@ package maze;
 
 public class Robot {
     
+    private enum Sides {LEFT, RIGHT, FRONT;}
     private char[][] mazeToNavigate;
     private char[][] movementRecord;
     private char directionSymbol;
@@ -10,10 +11,16 @@ public class Robot {
     private int stepCount;
     private int turnCount;
   
+    /**
+     * Constructs robot by initializing step and turn count, a randomly generated maze its in,
+     * movement record, position, looking direction and setting the direction symbol.
+     */
+    
     Robot() {
         stepCount = 0;
         turnCount = 0;
-        mazeToNavigate = new MazeGenerator().getMaze();
+        MazeGenerator generator = new MazeGenerator();
+        mazeToNavigate = generator.getRandomMaze();
         initializeMovementRecord();
         initializePosition();
         initializeDirection();
@@ -29,6 +36,10 @@ public class Robot {
      */
 
     Robot(char[][] maze) {
+        setNewMaze(maze);
+    }
+    
+    public void setNewMaze(char[][] maze) {
         stepCount = 0;
         turnCount = 0;
         mazeToNavigate = maze;
@@ -73,30 +84,46 @@ public class Robot {
     }
     
     /**
-     * Checks if robot has 
-     * @param side
-     * @return
+     * Checks if robot has a given field on its given side.
+     * @param sideToCheck Representing side next to robot.
+     * @param field Representing 
+     * @return Boolean answering if given field is on given side.
      */
     
-    public boolean isNextToField(Sides side, Symbols symbol) {
-        Point positionOfSide = getPositionOfSide(side);
-        char sign = symbol.getSign();
-        int row = positionOfSide.getX();
-        int col = positionOfSide.getY();
-        return mazeToNavigate[row][col] == sign;
+    public boolean isNextToField(Sides sideToCheck, Symbols field) {
+        Point positionOfSide = getPositionOfSide(sideToCheck);
+        char sign = field.getSign();
+        return Helper.isEntryAtPositionOf2DArrayEqualTo(positionOfSide, mazeToNavigate, sign);
     }
     
     /**
-     * 
-     * @param symbol
+     * Checks if robot is on a given field.
+     * @param field 
      * @return
      */
 
-    public boolean isOnField(Symbols symbol) {
-        int row = position.getX();
-        int col = position.getY();
-        char sign = symbol.getSign();
-        return mazeToNavigate[row][col] == sign;
+    public boolean isOnField(Symbols field) {
+        char sign = field.getSign();
+        return Helper.isEntryAtPositionOf2DArrayEqualTo(position, mazeToNavigate, sign);
+    }
+    
+    
+    public void findExit() {
+        while (!isOnField(Symbols.END)) {                           // While exit not found 
+            if (!isNextToField(Sides.RIGHT, Symbols.WALL))          //     If possible, move to the right
+                moveToSideAndRecord(Sides.RIGHT);
+            else if (!isNextToField(Sides.FRONT, Symbols.WALL))     //     else if possible, move forward
+                moveToSideAndRecord(Sides.FRONT);
+            else
+                turnToSide(Sides.LEFT);                             //     else turn left       
+            
+            printPositionInMaze(); 
+            Helper.tryToSleep(150);
+        }
+        System.out.println("Exit found!");  // Print recorded path and counts to console.
+        printMovementRecord();
+        printStepCount();
+        printTurnCount();
     }
 
     /**
@@ -157,10 +184,7 @@ public class Robot {
 
     private void initializePosition() {
         char sign = Symbols.START.getSign();
-        for (int row = 0; row < mazeToNavigate.length; row++)
-            for (int col = 0; col < mazeToNavigate[row].length; col++)
-                if (mazeToNavigate[row][col] == sign)
-                    position = new Point(row, col);
+        position = Helper.getPositionOfEntryIn2DArray(mazeToNavigate, sign);
     }
 
     /**
@@ -222,9 +246,7 @@ public class Robot {
      */
 
     private void recordMove() {
-        int row = position.getX();
-        int col = position.getY();
-        movementRecord[row][col] = directionSymbol;
+        Helper.setEntryAtPositionOf2DArray(position, movementRecord, directionSymbol);
     }
 
     /**
