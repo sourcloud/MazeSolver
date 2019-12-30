@@ -28,16 +28,21 @@ public class Robot {
     }
 
     /**
-     * Constructs robot by initializing step and turn count, the maze its in,
-     * movement record, position, looking direction and setting the direction
-     * symbol.
+     * Constructs robot by initializing step and turn count, a given maze its in,
+     * movement record, position, looking direction and setting the direction symbol.
      * 
-     * @param maze An two-dimensional array of chars representing a maze.
+     * @param maze A 2D-char-array representing a maze.
      */
 
     Robot(char[][] maze) {
         setNewMaze(maze);
     }
+    
+    /**
+     * Sets a new maze to navigate.
+     * Movement record, step and turn count, position and direction will be reset.
+     * @param maze A 2D-char-array representing a maze.
+     */
     
     public void setNewMaze(char[][] maze) {
         stepCount = 0;
@@ -50,8 +55,33 @@ public class Robot {
     }
     
     /**
+     * Lets robot find an exit using the right-hand-algorithm.
+     * While there is no exit found, tries to move to the right if possible,
+     * else tries to move forward if possible, else turns left.
+     * Prints every step to console.
+     * Prints evaluation to console after finding exit.
+     */
+    
+    public void findExit() {
+        while (!isOnField(Symbols.END)) {                 
+            if (!isNextToField(Sides.RIGHT, Symbols.WALL))        
+                moveToSideAndRecord(Sides.RIGHT);
+            else if (!isNextToField(Sides.FRONT, Symbols.WALL))    
+                moveToSideAndRecord(Sides.FRONT);
+            else
+                turnToSide(Sides.LEFT);                         
+            printPositionInMaze(); 
+            Helper.tryToSleep(150);
+        }
+        System.out.println("Exit found!"); 
+        printMovementRecord();
+        printStepCount();
+        printTurnCount();
+    }
+    
+    /**
      * Turns Robot to either left or right side, sets direction symbol and increases turn count.
-     * @param sideToTurn
+     * @param sideToTurn Side to which the robot will turn.
      */
     
     public void turnToSide(Sides sideToTurn) {
@@ -86,62 +116,34 @@ public class Robot {
     /**
      * Checks if robot has a given field on its given side.
      * @param sideToCheck Representing side next to robot.
-     * @param field Representing 
+     * @param field Symbol representing a field.
      * @return Boolean answering if given field is on given side.
      */
     
     public boolean isNextToField(Sides sideToCheck, Symbols field) {
         Point positionOfSide = getPositionOfSide(sideToCheck);
         char sign = field.getSign();
-        return Helper.isEntryAtPositionOf2DArrayEqualTo(positionOfSide, mazeToNavigate, sign);
+        return Helper.isElementAtPositionOf2DArrayEqualTo(positionOfSide, mazeToNavigate, sign);
     }
     
     /**
      * Checks if robot is on a given field.
-     * @param field 
-     * @return
+     * @param field Symbol representing a field.
+     * @return A boolean answering if robot is on the given field
      */
 
     public boolean isOnField(Symbols field) {
         char sign = field.getSign();
-        return Helper.isEntryAtPositionOf2DArrayEqualTo(position, mazeToNavigate, sign);
-    }
-    
-    
-    public void findExit() {
-        while (!isOnField(Symbols.END)) {                           // While exit not found 
-            if (!isNextToField(Sides.RIGHT, Symbols.WALL))          //     If possible, move to the right
-                moveToSideAndRecord(Sides.RIGHT);
-            else if (!isNextToField(Sides.FRONT, Symbols.WALL))     //     else if possible, move forward
-                moveToSideAndRecord(Sides.FRONT);
-            else
-                turnToSide(Sides.LEFT);                             //     else turn left       
-            
-            printPositionInMaze(); 
-            Helper.tryToSleep(150);
-        }
-        System.out.println("Exit found!");  // Print recorded path and counts to console.
-        printMovementRecord();
-        printStepCount();
-        printTurnCount();
+        return Helper.isElementAtPositionOf2DArrayEqualTo(position, mazeToNavigate, sign);
     }
 
     /**
      * Prints maze to console including the current position of robot.
      */
-
+    
     public void printPositionInMaze() {
         System.out.println("Steps: " + stepCount + "\tTurns: " + turnCount + "\n");
-        for (int row = 0; row < mazeToNavigate.length; row++) {
-            for (int col = 0; col < mazeToNavigate[row].length; col++) {
-                if (position.hasCoordinates(row, col))
-                    System.out.print(directionSymbol + " ");
-                else
-                    System.out.print(mazeToNavigate[row][col] + " ");
-            }
-            System.out.println();
-        }
-        System.out.println();
+        Helper.print2DArrayWithSymbolOnPosition(mazeToNavigate, position, directionSymbol);
     }
 
     /**
@@ -175,7 +177,7 @@ public class Robot {
 
     private void initializeMovementRecord() {
         movementRecord = new char[mazeToNavigate.length][mazeToNavigate[0].length];
-        Helper.fill2DArray(movementRecord, Symbols.EMPTY.getSign());
+        Helper.fill2DArray(movementRecord, Symbols.PATH.getSign());
     }
 
     /**
@@ -246,7 +248,7 @@ public class Robot {
      */
 
     private void recordMove() {
-        Helper.setEntryAtPositionOf2DArray(position, movementRecord, directionSymbol);
+        Helper.setElementAtPositionOf2DArray(position, movementRecord, directionSymbol);
     }
 
     /**

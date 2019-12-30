@@ -7,7 +7,7 @@ public enum Symbols {
     WEST ('<'),
     NORTH ('^'),
     WALL('.'),
-    EMPTY(' '),
+    PATH(' '),
     START('B'),
     END('A');
     

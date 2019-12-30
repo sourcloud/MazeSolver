@@ -49,7 +49,7 @@ public class Helper {
      * @param array 2D-char-array to get entry from.
      */
     
-    public static char getEntryAtPositionOf2DArray(Point position, char[][] array) {
+    public static char getElementAtPositionOf2DArray(Point position, char[][] array) {
         int row = position.getX();
         int col = position.getY();
         return array[row][col];
@@ -62,7 +62,7 @@ public class Helper {
      * @param toBeSet char that will be set.
      */
     
-    public static void setEntryAtPositionOf2DArray(Point position, char[][] array, char toBeSet) {
+    public static void setElementAtPositionOf2DArray(Point position, char[][] array, char toBeSet) {
         int row = position.getX();
         int col = position.getY();
         array[row][col] = toBeSet;
@@ -76,7 +76,7 @@ public class Helper {
      * @return Boolean answering if entry at given position is given char.
      */
     
-    public static boolean isEntryAtPositionOf2DArrayEqualTo(Point position, char[][] array, char compareChar) {
+    public static boolean isElementAtPositionOf2DArrayEqualTo(Point position, char[][] array, char compareChar) {
         int row = position.getX();
         int col = position.getY();
         return array[row][col] == compareChar;
@@ -127,8 +127,43 @@ public class Helper {
     }
     
     /**
+     * Prints an given char-array but replaces char at given index with given symbol.
+     * @param toPrint Array to print.
+     * @param index Int index where the char will be replaced. 
+     * @param symbol Char to replace with.
+     */
+    
+    public static void printArrayWithSymbolOnIndex(char[] toPrint, int index, char symbol) {
+        for (int i = 0; i < toPrint.length; i++) {
+            if (i != index)
+                System.out.print(toPrint[i] + " ");
+            else
+                System.out.print(symbol + " ");
+        }
+        System.out.println();
+    }
+    
+    /**
+     * Prints a given 2D-char-array but replaces char at given position with given symbol.
+     * @param toPrint 2D-char-array to print.
+     * @param position Point where the char will be replaced.
+     * @param symbol Char to replace with.
+     */
+    
+    public static void print2DArrayWithSymbolOnPosition(char[][] toPrint, Point position, char symbol) {
+        int col = position.getY();
+        for (int row = 0; row < toPrint.length; row++) {
+            if (row != position.getX())
+                printArray(toPrint[row]);
+            else
+                printArrayWithSymbolOnIndex(toPrint[row], col, symbol);
+        }
+        System.out.println();
+    }
+    
+    /**
      * Shuffles an given array of Directions.
-     * @param toShuffle Array to be shuffle.
+     * @param toShuffle Array to shuffle.
      * @return Shuffled Array.
      */
     
